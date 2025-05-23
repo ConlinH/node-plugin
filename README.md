@@ -1,10 +1,10 @@
 ## node插件
 
 ##### 1. 安装环境
-`npm install -g node-gpy`
+`npm install -g node-gyp`
 
 ##### 2. 配置
-`node-gpy configure`
+`node-gyp configure`
 
 ##### 3. 生成插件
 执行`node-gpy build`命令后，在`build/Release/`目录下会生成`faker.node`文件

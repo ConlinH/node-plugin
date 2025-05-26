@@ -1,0 +1,1 @@
+console.log("faker.run_js_file is called");

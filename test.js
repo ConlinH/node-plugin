@@ -8,10 +8,11 @@ faker.print("1111");
 
 // 自定义绑定数据到底层，规避检测
 o = {}
-faker.set_arg(o, 'cache', {'name': 'val'});
-faker.get_arg(o, 'cache')
-console.log("js层无法感知到cache的存在", o)
-
+faker.set_data(o, 'cache', { 'name': 'val' });
+console.log('cache: ', faker.get_data(o, 'cache'));
+console.log("js层无法感知到cache的存在: ", o)
+faker.del_data(o, 'cache');
+console.log('cache: ', faker.get_data(o, 'cache'));
 
 // 自定义的执行js函数()
 faker.run_js("console.log('faker.run_js is called')", "VM1");
@@ -30,7 +31,7 @@ faker.run_js_file("./temp.js", "VM2");
 
 // 封装native函数
 test = faker.native({
-    name: "test", 
+    name: "test",
     length: 0,
     cb: function () {
         console.log("native test is called:", ...arguments);
@@ -44,7 +45,7 @@ let [document_all, HTMLAllCollection] = faker.new_document_all(function () {
     console.log("document.all is called:", ...arguments);
     return null;
 });
-document = { all : document_all };
+document = { all: document_all };
 
 
 Object.defineProperties(HTMLAllCollection.prototype, {
@@ -58,7 +59,7 @@ Object.defineProperties(HTMLAllCollection.prototype, {
     },
     item: {
         value: faker.native({
-            name: "item",length: 0,
+            name: "item", length: 0,
             cb: function () {
                 console.log("item is called: ", ...arguments);
                 return null;
@@ -66,7 +67,7 @@ Object.defineProperties(HTMLAllCollection.prototype, {
         }), writable: true, enumerable: true, configurable: true,
     },
     namedItem: {
-        value: faker.native({ 
+        value: faker.native({
             name: "namedItem", length: 0,
             cb: function () {
                 console.log("namedItem is called: ", ...arguments);
@@ -77,10 +78,10 @@ Object.defineProperties(HTMLAllCollection.prototype, {
     constructor: { writable: true, enumerable: false, configurable: true, value: HTMLAllCollection },
     [Symbol.iterator]: {
         value: faker.native({
-            name: "values", length: 0, 
+            name: "values", length: 0,
             cb: function* () {
                 console.log("Symbol.iterator is called");
-                for (const val of [1,2,3]) {
+                for (const val of [1, 2, 3]) {
                     yield val;
                 }
             }

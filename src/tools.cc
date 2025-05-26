@@ -17,7 +17,7 @@ void Print(const FunctionCallbackInfo<Value>& info) {
 }
 
 
-void GetArg(const FunctionCallbackInfo<Value>& info) {
+void GetData(const FunctionCallbackInfo<Value>& info) {
     Isolate* isolate = info.GetIsolate();
     Local<Context> ctx = isolate->GetCurrentContext();
 
@@ -32,7 +32,7 @@ void GetArg(const FunctionCallbackInfo<Value>& info) {
     info.GetIsolate()->ThrowException(Exception::TypeError(V8String(isolate, "get arg failed")));
 }
 
-void SetArg(const FunctionCallbackInfo<Value>& info) {
+void SetData(const FunctionCallbackInfo<Value>& info) {
     Isolate* isolate = info.GetIsolate();
     Local<Context> ctx = isolate->GetCurrentContext();
 
@@ -46,5 +46,21 @@ void SetArg(const FunctionCallbackInfo<Value>& info) {
     info.GetIsolate()->ThrowException(Exception::TypeError(V8String(isolate, "set arg failed")));
 }
 
+void DelData(const FunctionCallbackInfo<Value>& info) {
+    Isolate* isolate = info.GetIsolate();
+    Local<Context> ctx = isolate->GetCurrentContext();
 
+    if (info.Length() == 2 && info[0]->IsObject() && info[1]->IsString()) {
+        Local<Object> targert = info[0].As<Object>();
+        if (targert->DeletePrivate(ctx, v8::Private::ForApi(isolate, info[1].As<String>())).FromJust()) {
+            info.GetReturnValue().Set(v8::True(isolate));
+        }
+        else
+        {
+            info.GetReturnValue().Set(v8::False(isolate));
+        }
+        return;
+    }
+    info.GetIsolate()->ThrowException(Exception::TypeError(V8String(isolate, "get arg failed")));
+}
 }

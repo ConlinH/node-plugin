@@ -11,8 +11,9 @@ using v8::FunctionCallbackInfo;
 namespace faker {
 
 void Print(const FunctionCallbackInfo<Value>& info);
-void GetArg(const FunctionCallbackInfo<Value>& info);
-void SetArg(const FunctionCallbackInfo<Value>& info);
+void GetData(const FunctionCallbackInfo<Value>& info);
+void SetData(const FunctionCallbackInfo<Value>& info);
+void DelData(const FunctionCallbackInfo<Value>& info);
 
 }
 

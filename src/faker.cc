@@ -40,8 +40,9 @@ Local<Object> Register(Local<Object> exports, Isolate* isolate, Local<Context> c
     
     // tools
     prototype_template_Faker->Set(isolate, "print", FunctionTemplate::New(isolate, Print));
-    prototype_template_Faker->Set(isolate, "get_arg", FunctionTemplate::New(isolate, GetArg));
-    prototype_template_Faker->Set(isolate, "set_arg", FunctionTemplate::New(isolate, SetArg));
+    prototype_template_Faker->Set(isolate, "get_data", FunctionTemplate::New(isolate, GetData));
+    prototype_template_Faker->Set(isolate, "set_data", FunctionTemplate::New(isolate, SetData));
+    prototype_template_Faker->Set(isolate, "del_data", FunctionTemplate::New(isolate, DelData));
 
     Local<Object> faker_obj = interface_template_Faker->InstanceTemplate()->NewInstance(ctx).ToLocalChecked();
     return faker_obj;

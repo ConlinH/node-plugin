@@ -89,11 +89,24 @@ Object.defineProperties(HTMLAllCollection.prototype, {
     },
 });
 
+// 测试HTMLAllCollection
+console.log("HTMLAllCollection.toString(): ", HTMLAllCollection.toString());
+try {
+    new HTMLAllCollection()
+} catch (e) {
+    console.log("new HTMLAllCollection() is called: ", e.message);
+}
+try {
+    HTMLAllCollection()
+} catch (e) {
+    console.log("HTMLAllCollection() is called: ", e.message);
+}
+
+// 测试document.all
 console.log("typeof document.all:", typeof document.all);
 console.log("document.all.toString(): ", document.all.toString());
 console.log("document.all.__proto__.toString(): ", document.all.__proto__.toString());
 console.log("document.all instanceof HTMLAllCollection", document.all instanceof HTMLAllCollection);
-console.log("HTMLAllCollection.toString(): ", HTMLAllCollection.toString());
 
 console.log("document.all.length: ", document.all.length);
 for (const val of document.all) {

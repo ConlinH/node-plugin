@@ -6,6 +6,12 @@ console.log(faker.v8_version);
 // 自定义的打印函数
 faker.print("1111");
 
+// 自定义绑定数据到底层，规避检测
+o = {}
+faker.set_arg(o, 'cache', {'name': 'val'});
+faker.get_arg(o, 'cache')
+console.log("js层无法感知到cache的存在", o)
+
 
 // 自定义的执行js函数()
 faker.run_js("console.log('faker.run_js is called')", "VM1");

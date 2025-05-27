@@ -41,36 +41,56 @@ console.log("test.toString():  ", test.toString());
 test("hi faker.native");
 
 // 生成HTMLAllCollection原型及document.all对象
-let [document_all, HTMLAllCollection] = faker.new_document_all(function () {
+document = {}
+let [document_all, HTMLAllCollection] = faker.new_document_all(function (x) {
     console.log("document.all is called:", ...arguments);
-    return null;
+    let cache = faker.get_data(document.all, "cache")
+    for(let i = 0; i < cache.length; i++){
+        console.log("cache[i]: ", cache[i]);
+        if(cache[i].id === x){
+            return cache[i];
+        }
+    }
+    return cache[x] ||null;
 });
-document = { all: document_all };
-
+document.all = document_all;
+faker.set_data(document_all, 'cache', [{ tagName: 'DIV' }, { tagName: 'SPAN', id: 'id1' }, { tagName: 'P' }]);
 
 Object.defineProperties(HTMLAllCollection.prototype, {
     length: {
         get: faker.native({
             name: "length", length: 0,
             cb: function () {
-                return 3;
+                return faker.get_data(this, "cache")?.length || 0;
             }
         }), set: undefined, enumerable: true, configurable: true,
     },
     item: {
         value: faker.native({
             name: "item", length: 0,
-            cb: function () {
+            cb: function (x) {
                 console.log("item is called: ", ...arguments);
-                return null;
+                let cache = faker.get_data(this, "cache")
+                for (let i = 0; i < cache.length; i++) {
+                    if (cache[i].id === x) {
+                        return cache[i];
+                    }
+                }
+                return cache[x] || null;
             }
         }), writable: true, enumerable: true, configurable: true,
     },
     namedItem: {
         value: faker.native({
             name: "namedItem", length: 0,
-            cb: function () {
+            cb: function (x) {
                 console.log("namedItem is called: ", ...arguments);
+                let cache = faker.get_data(this,"cache");
+                for(let i = 0; i < cache.length; i++){
+                    if(cache[i].id === x){
+                        return cache[i];
+                    }
+                }
                 return null;
             }
         }), writable: true, enumerable: true, configurable: true,
@@ -81,7 +101,8 @@ Object.defineProperties(HTMLAllCollection.prototype, {
             name: "values", length: 0,
             cb: function* () {
                 console.log("Symbol.iterator is called");
-                for (const val of [1, 2, 3]) {
+                let cache = faker.get_data(this, "cache");
+                for (const val of cache) {
                     yield val;
                 }
             }
@@ -110,8 +131,13 @@ console.log("document.all instanceof HTMLAllCollection", document.all instanceof
 
 console.log("document.all.length: ", document.all.length);
 for (const val of document.all) {
-    console.log("val: ", val);
+    console.log("element: ", val);
 }
 console.log("document.all(0): ", document.all(0));
+console.log("document.all(100): ", document.all(100));
 console.log("document.item(0): ", document.all.item(0));
-console.log("document.namedItem('eleid'): ", document.all.namedItem('eleid'));
+console.log("document.item(100): ", document.all.item(100));
+console.log("document.item('id1'): ", document.all.item('id1'));
+console.log("document.namedItem('id1'): ", document.all.namedItem('id1'));
+console.log("document.namedItem(0): ", document.all.namedItem(0));
+faker.del_data(document_all, 'cache');

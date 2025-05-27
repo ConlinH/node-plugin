@@ -63,7 +63,6 @@ let [document_all, HTMLAllCollection] = faker.new_document_all(function (x) {
     console.log("document.all is called:", ...arguments);
     let cache = faker.get_data(document.all, "cache")
     for(let i = 0; i < cache.length; i++){
-        console.log("cache[i]: ", cache[i]);
         if(cache[i].id === x){
             return cache[i];
         }
@@ -71,7 +70,6 @@ let [document_all, HTMLAllCollection] = faker.new_document_all(function (x) {
     return cache[x] ||null;
 });
 document.all = document_all;
-faker.set_data(document_all, 'cache', [{ tagName: 'DIV' }, { tagName: 'SPAN', id: 'id1' }, { tagName: 'P' }]);
 
 Object.defineProperties(HTMLAllCollection.prototype, {
     length: {
@@ -140,12 +138,17 @@ try {
     console.log("HTMLAllCollection() is called: ", e.message);
 }
 
-// 测试document.all
+
+// 测试document.all类型
 console.log("typeof document.all:", typeof document.all);
 console.log("document.all.toString(): ", document.all.toString());
 console.log("document.all.__proto__.toString(): ", document.all.__proto__.toString());
 console.log("document.all instanceof HTMLAllCollection", document.all instanceof HTMLAllCollection);
 
+// 设置document.all的数据
+faker.set_data(document_all, 'cache', [{ tagName: 'DIV' }, { tagName: 'SPAN', id: 'id1' }, { tagName: 'P' }]);
+
+// 测试document.all的功能
 console.log("document.all.length: ", document.all.length);
 for (const val of document.all) {
     console.log("element: ", val);

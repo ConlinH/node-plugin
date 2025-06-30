@@ -59,17 +59,19 @@ test("hi faker.native");
 
 // 生成HTMLAllCollection原型及document.all对象
 document = {}
-let [document_all, HTMLAllCollection] = faker.new_document_all(function (x) {
+let [document_all, HTMLAllCollection] = faker.new_document_all();
+document.all = document_all;
+// 设置document.all对象的回调函数
+faker.set_data(document_all, 'cb', function (x) {
     console.log("document.all is called:", ...arguments);
     let cache = faker.get_data(document.all, "cache")
-    for(let i = 0; i < cache.length; i++){
-        if(cache[i].id === x){
+    for (let i = 0; i < cache.length; i++) {
+        if (cache[i].id === x) {
             return cache[i];
         }
     }
-    return cache[x] ||null;
+    return cache[x] || null;
 });
-document.all = document_all;
 
 Object.defineProperties(HTMLAllCollection.prototype, {
     length: {
@@ -100,9 +102,9 @@ Object.defineProperties(HTMLAllCollection.prototype, {
             name: "namedItem", length: 0,
             cb: function (x) {
                 console.log("namedItem is called: ", ...arguments);
-                let cache = faker.get_data(this,"cache");
-                for(let i = 0; i < cache.length; i++){
-                    if(cache[i].id === x){
+                let cache = faker.get_data(this, "cache");
+                for (let i = 0; i < cache.length; i++) {
+                    if (cache[i].id === x) {
                         return cache[i];
                     }
                 }

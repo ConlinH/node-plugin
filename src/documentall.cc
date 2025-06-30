@@ -7,44 +7,50 @@ void DocumentAllCallback(const FunctionCallbackInfo<Value>& info) {
     Isolate* isolate = info.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
 
-    if (info.Data().IsEmpty()) {
-        info.GetReturnValue().SetNull();
-    }
-    else {
+    Local<Value> val;
+    if (info.This()->GetPrivate(context, v8::Private::ForApi(isolate, V8String(info.GetIsolate(), "cb"))).ToLocal(&val))
+    {
+        if (!val->IsFunction()){
+            info.GetReturnValue().SetNull();
+            return;
+        }
         Local<Value> param[10];
-        for (int i = 0; i < info.Length(); i++) {
+        for (int i = 0; i < info.Length(); i++)
+        {
             param[i] = info[i];
         }
-        Local<Function> call_all = info.Data().As<Function>();
+        Local<Function> call_all = val.As<Function>();
         Local<Value> result = call_all->Call(context, Null(isolate), info.Length(), param).ToLocalChecked();
         info.GetReturnValue().Set(result);
+        return;
     }
-
+    info.GetReturnValue().SetNull();
 }
 
 void IllegalConstructorCallback(const FunctionCallbackInfo<Value>& info) {
     info.GetIsolate()->ThrowException(v8::Exception::TypeError(V8String(info.GetIsolate(), "Illegal constructor")));
 }
 
+v8::Persistent<v8::FunctionTemplate> persistent_t;
+
 void DocumentAll(const FunctionCallbackInfo<Value>& info) {
     Isolate* isolate = info.GetIsolate();
+    HandleScope handle_scope(isolate);
     Local<Context> context = isolate->GetCurrentContext();
+    EscapableHandleScope es(isolate);
 
-    Local<FunctionTemplate> t = FunctionTemplate::New(isolate, IllegalConstructorCallback);
-    t->InstanceTemplate()->MarkAsUndetectable();
-    t->SetClassName(V8String(isolate, "HTMLAllCollection"));
-    t->PrototypeTemplate()->Set(Symbol::GetToStringTag(isolate), V8String(isolate, "HTMLAllCollection"), PropertyAttribute(v8::ReadOnly | v8::DontEnum));
-
-    if (info.Length() > 0 && info[0]->IsFunction()) {
-        Local<Function> call_all = info[0].As<Function>();
-        t->InstanceTemplate()->SetCallAsFunctionHandler(DocumentAllCallback, call_all);
-    }
-    else {
+    if (persistent_t.IsEmpty())
+    {
+        Local<FunctionTemplate> t = FunctionTemplate::New(isolate, IllegalConstructorCallback);
+        t->SetClassName(V8String(isolate, "HTMLAllCollection"));
+        t->PrototypeTemplate()->Set(Symbol::GetToStringTag(isolate), V8String(isolate, "HTMLAllCollection"), PropertyAttribute(v8::ReadOnly | v8::DontEnum));
+        t->InstanceTemplate()->MarkAsUndetectable();
         t->InstanceTemplate()->SetCallAsFunctionHandler(DocumentAllCallback);
+        persistent_t.Reset(isolate, t);
     }
 
-    Local<Object> obj = t->InstanceTemplate()->NewInstance(context).ToLocalChecked();
-    Local<Function> fn = t->GetFunction(context).ToLocalChecked();
+    Local<Object> obj = persistent_t.Get(isolate)->InstanceTemplate()->NewInstance(context).ToLocalChecked();
+    Local<Function> fn = persistent_t.Get(isolate)->GetFunction(context).ToLocalChecked();
 
     Local<Array> arr = Array::New(isolate, 2);
     arr->Set(context, 0, obj);

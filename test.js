@@ -44,7 +44,8 @@ test("hi faker.native");
 document = {}
 let [document_all, HTMLAllCollection] = faker.new_document_all();
 document.all = document_all;
-// 设置document.all对象的回调函数
+
+// 设置document.all对象的回调函数，即document.all()调用时触发的函数
 faker.set_data(document_all, 'cb', function (x) {
     console.log("document.all is called:", ...arguments);
     let cache = faker.get_data(document.all, "cache")
@@ -56,6 +57,7 @@ faker.set_data(document_all, 'cb', function (x) {
     return cache[x] || null;
 });
 
+// 定义document.all原型的属性和方法
 Object.defineProperties(HTMLAllCollection.prototype, {
     length: {
         get: faker.native({
@@ -110,7 +112,7 @@ Object.defineProperties(HTMLAllCollection.prototype, {
     },
 });
 
-// 测试HTMLAllCollection
+// 测试document.all的原型HTMLAllCollection是否可以new和call
 console.log("HTMLAllCollection.toString(): ", HTMLAllCollection.toString());
 try {
     new HTMLAllCollection()
@@ -140,9 +142,9 @@ for (const val of document.all) {
 }
 console.log("document.all(0): ", document.all(0));
 console.log("document.all(100): ", document.all(100));
-console.log("document.item(0): ", document.all.item(0));
-console.log("document.item(100): ", document.all.item(100));
-console.log("document.item('id1'): ", document.all.item('id1'));
-console.log("document.namedItem('id1'): ", document.all.namedItem('id1'));
-console.log("document.namedItem(0): ", document.all.namedItem(0));
+console.log("document.all.item(0): ", document.all.item(0));
+console.log("document.all.item(100): ", document.all.item(100));
+console.log("document.all.item('id1'): ", document.all.item('id1'));
+console.log("document.all.namedItem('id1'): ", document.all.namedItem('id1'));
+console.log("document.all.namedItem(0): ", document.all.namedItem(0));
 faker.del_data(document_all, 'cache');
